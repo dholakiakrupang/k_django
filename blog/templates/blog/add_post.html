@@ -1,0 +1,40 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Add Post{% endblock %}
+
+{% block content %}
+<h1>Add a New Post</h1>
+
+<!-- Progress Bar -->
+<div class="progress-container">
+  <div class="progress-bar" id="add-post-progress" style="width: 0%;"></div>
+</div>
+
+<!-- Add Post Form -->
+<form method="POST" enctype="multipart/form-data" id="add-post-form" style="max-width: 600px; margin: auto;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" style="margin-top: 10px;">Add Post</button>
+</form>
+
+<a href="{% url 'manage_posts' %}" style="display: block; margin-top: 20px; text-align: center;">Back to Manage Posts</a>
+
+<script>
+  const addForm = document.getElementById('add-post-form');
+  const addProgressBar = document.getElementById('add-post-progress');
+
+  addForm.addEventListener('submit', function () {
+    addProgressBar.style.width = '0%';
+    let progress = 0;
+
+    const interval = setInterval(() => {
+      if (progress < 100) {
+        progress += 10;
+        addProgressBar.style.width = progress + '%';
+      } else {
+        clearInterval(interval);
+      }
+    }, 100);
+  });
+</script>
+{% endblock %}

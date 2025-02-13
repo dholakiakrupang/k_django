@@ -1,0 +1,86 @@
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="user-profile container mt-4">
+    <form id="profile-update-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <!-- User Image Section -->
+            <div class="col-md-4 text-center">
+                <div class="user-img-wrapper">
+                    {% if user.profile.profile_picture %}
+                        <img id="profile-img" src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="img-thumbnail rounded-circle">
+                    {% else %}
+                        <img id="profile-img" src="{% static 'default-profile.jpg' %}" alt="Default Profile Picture" class="img-thumbnail rounded-circle">
+                    {% endif %}
+                </div>
+                <input type="file" id="profile_picture" name="profile_picture" class="form-control mt-2">
+            </div>
+
+            <!-- User Details Section -->
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label><strong>Username:</strong></label>
+                    <input type="text" class="form-control" name="username" value="{{ user.username }}" readonly>
+                </div>
+
+                <div class="form-group mt-2">
+                    <label><strong>First Name:</strong></label>
+                    <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}">
+                </div>
+
+                <div class="form-group mt-2">
+                    <label><strong>Last Name:</strong></label>
+                    <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}">
+                </div>
+
+                <div class="form-group mt-2">
+                    <label><strong>Email Address:</strong></label>
+                    <input type="email" class="form-control" name="email" value="{{ user.email }}">
+                </div>
+
+                <div class="form-group mt-2">
+                    <label><strong>Bio:</strong></label>
+                    <textarea class="form-control" name="bio">{{ user.profile.bio }}</textarea>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success" id="update-profile-btn">Update Profile</button>
+                    <a class="btn btn-info ms-2" href="{% url 'logout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById("profile-update-form").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent page reload
+
+    let formData = new FormData(this);
+
+    fetch("{% url 'profile_update' %}", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Profile updated successfully!");
+            if (data.profile_picture_url) {
+                document.getElementById("profile-img").src = data.profile_picture_url;
+            }
+        } else {
+            alert("Failed to update profile. Please try again.");
+        }
+    })
+    .catch(error => console.error("Error:", error));
+});
+</script>
+{% endblock %}

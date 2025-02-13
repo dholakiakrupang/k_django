@@ -1,0 +1,71 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Update Post{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Update Post</h1>
+
+<!-- Progress Bar -->
+<div class="progress-container" style="width: 100%; height: 5px; background: #ddd; margin-top: 10px;">
+  <div class="progress-bar" id="update-post-progress" style="width: 0%; height: 100%; background: #28a745;"></div>
+</div>
+
+<!-- Update Post Form -->
+<form method="POST" enctype="multipart/form-data" id="update-post-form" style="max-width: 600px; margin: auto;">
+    {% csrf_token %}
+    
+    <!-- Title Field -->
+    <label for="id_title">Title</label>
+    {{ form.title }}
+    
+    <!-- Content Field -->
+    <label for="id_content">Content</label>
+    {{ form.content }}
+    
+    <!-- Status Field -->
+    <label for="id_status">Status</label>
+    {{ form.status }}
+    
+    <!-- Current Thumbnail Preview -->
+    {% if form.instance.thumbnail %}
+        <p>Current Thumbnail:</p>
+        <img src="{{ form.instance.thumbnail.url }}" alt="Current Thumbnail" style="width: 100px; height: auto; border-radius: 5px; display: block; margin-bottom: 10px;">
+    {% endif %}
+    
+    <!-- New Thumbnail Upload -->
+    <label for="id_thumbnail">Upload New Thumbnail:</label>
+    <input type="file" name="thumbnail" id="id_thumbnail" class="form-control">
+    
+    <button type="submit" class="btn btn-primary" style="margin-top: 10px; width: 100%;">Update Post</button>
+</form>
+
+<a href="{% url 'manage_posts' %}" style="display: block; margin-top: 20px; text-align: center;">Back to Manage Posts</a>
+
+<script>
+  document.getElementById("update-post-form").addEventListener("submit", function(event) {
+      const fileInput = document.getElementById("id_thumbnail");
+
+      // Check if the user selected a new file
+      if (!fileInput.files.length) {
+          const confirmUpdate = confirm("No new image selected. Do you want to continue?");
+          if (!confirmUpdate) {
+              event.preventDefault();
+              return;
+          }
+      }
+
+      // Show Progress Bar Animation
+      const progressBar = document.getElementById("update-post-progress");
+      progressBar.style.width = '0%';
+      let progress = 0;
+      const interval = setInterval(() => {
+          if (progress < 100) {
+              progress += 10;
+              progressBar.style.width = progress + '%';
+          } else {
+              clearInterval(interval);
+          }
+      }, 100);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "blog/base.html" %}
+
+{% block title %} Blog Posts{% endblock %}
+
+{% block content %}
+    <h1 class="mt-4 text-center" id="latestPostsHeading"> Blog Posts</h1>
+
+    <!-- Post Grid -->
+    <div class="container">
+        <div class="row" id="postContainer">
+            {% include 'blog/filtered_posts.html' %}
+        </div>
+    </div>
+
+ 
+{% endblock %}
